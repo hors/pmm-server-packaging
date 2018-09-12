@@ -5,7 +5,7 @@
 %global repo            grafana
 # https://github.com/grafana/grafana
 %global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
-%global commit          v5.1.3
+%global commit          v5.2.4
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 %if ! 0%{?gobuild:1}
@@ -13,13 +13,13 @@
 %endif
 
 Name:           percona-%{repo}
-Version:        5.1.3
+Version:        5.2.4
 Release:        4%{?dist}
 Summary:        Grafana is an open source, feature rich metrics dashboard and graph editor
 License:        ASL 2.0
 URL:            https://%{import_path}
 Source0:        https://%{import_path}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
-Source2:        grafana-node_modules-v5.1.3.el7.tar.gz
+Source2:        grafana-node_modules-v5.2.4.el7.tar.gz
 Source3:        grafana-server.service
 Patch0:         grafana-5.1.3-share-panel.patch
 Patch1:         grafana-5.1.3-refresh-auth.patch
@@ -70,6 +70,13 @@ cp -rpav tmp/conf %{buildroot}%{_datadir}/%{repo}
 cp -rpav tmp/public %{buildroot}%{_datadir}/%{repo}
 cp -rpav tmp/scripts %{buildroot}%{_datadir}/%{repo}
 
+if [ -d tmp/bin ]; then
+ cp -rpav bin/* tmp/bin/
+else
+ mkdir -p tmp/bin
+ cp -rpav bin/* tmp/bin/
+fi
+
 install -d -p %{buildroot}%{_sbindir}
 cp tmp/bin/%{repo}-server %{buildroot}%{_sbindir}/
 install -d -p %{buildroot}%{_bindir}
@@ -95,7 +102,6 @@ export GOPATH=$(pwd)/_build:%{gopath}
 go test ./pkg/api
 go test ./pkg/bus
 go test ./pkg/components/apikeygen
-go test ./pkg/components/renderer
 go test ./pkg/events
 go test ./pkg/models
 go test ./pkg/plugins
@@ -139,6 +145,9 @@ exit 0
 %systemd_postun grafana.service
 
 %changelog
+* Wed Sep 12 2018 Vadim Yalovets <vadim.yalovets@percona.com> - 5.2.4-1
+- PMM-2912 Grafana Update + Latest Version
+
 * Mon Jun 18 2018 Mykola Marzhan <mykola.marzhan@percona.com> - 5.1.3-3
 - PMM-2625 fix share-panel patch
 

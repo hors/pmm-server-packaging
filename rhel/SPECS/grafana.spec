@@ -5,7 +5,7 @@
 %global repo            grafana
 # https://github.com/grafana/grafana
 %global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
-%global commit          v5.1.3
+%global commit          v5.3.0-beta3
 %global shortcommit     %(c=%{commit}; echo ${c:0:7})
 
 %if ! 0%{?gobuild:1}
@@ -13,13 +13,13 @@
 %endif
 
 Name:           percona-%{repo}
-Version:        5.1.3
-Release:        4%{?dist}
+Version:        5.3.0
+Release:        beta3%{?dist}
 Summary:        Grafana is an open source, feature rich metrics dashboard and graph editor
 License:        ASL 2.0
 URL:            https://%{import_path}
 Source0:        https://%{import_path}/archive/%{commit}/%{repo}-%{shortcommit}.tar.gz
-Source2:        grafana-node_modules-v5.1.3.el7.tar.gz
+Source2:        grafana-node_modules-v5.3.0.el7.tar.gz
 Source3:        grafana-server.service
 Patch0:         grafana-5.1.3-share-panel.patch
 Patch1:         grafana-5.1.3-refresh-auth.patch
@@ -42,7 +42,7 @@ Grafana is an open source, feature rich metrics dashboard and graph editor for
 Graphite, InfluxDB & OpenTSDB.
 
 %prep
-%setup -q -a 2 -n %{repo}-%{version}
+%setup -q -a 2 -n %{repo}-%{version}-beta3
 %patch0 -p 1
 %patch1 -p 1
 rm -rf Godeps
@@ -70,6 +70,13 @@ cp -rpav tmp/conf %{buildroot}%{_datadir}/%{repo}
 cp -rpav tmp/public %{buildroot}%{_datadir}/%{repo}
 cp -rpav tmp/scripts %{buildroot}%{_datadir}/%{repo}
 
+if [ -d tmp/bin ]; then
+ cp -rpav bin/* tmp/bin/
+else
+ mkdir -p tmp/bin
+ cp -rpav bin/* tmp/bin/
+fi
+
 install -d -p %{buildroot}%{_sbindir}
 cp tmp/bin/%{repo}-server %{buildroot}%{_sbindir}/
 install -d -p %{buildroot}%{_bindir}
@@ -95,7 +102,6 @@ export GOPATH=$(pwd)/_build:%{gopath}
 go test ./pkg/api
 go test ./pkg/bus
 go test ./pkg/components/apikeygen
-go test ./pkg/components/renderer
 go test ./pkg/events
 go test ./pkg/models
 go test ./pkg/plugins
@@ -139,6 +145,9 @@ exit 0
 %systemd_postun grafana.service
 
 %changelog
+* Fri Oct  5 2018 Vadim Yalovets <vadim.yalovets@percona.com> - 5.3.0-beta3
+- PMM-2685 Grafana 5.3
+
 * Mon Jun 18 2018 Mykola Marzhan <mykola.marzhan@percona.com> - 5.1.3-3
 - PMM-2625 fix share-panel patch
 

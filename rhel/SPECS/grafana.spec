@@ -6,7 +6,7 @@
 # https://github.com/grafana/grafana
 %global import_path     %{provider}.%{provider_tld}/%{project}/%{repo}
 %global commit          v5.3.0-beta3
-%global shortcommit     %(c=%{commit}; echo ${c:0:7})
+%global shortcommit     %(c=%{commit}; echo ${c:0:6})
 
 %if ! 0%{?gobuild:1}
 %define gobuild(o:) go build -ldflags "${LDFLAGS:-} -B 0x$(head -c20 /dev/urandom|od -An -tx1|tr -d ' \\n')" -a -v -x %{?**}; 
@@ -70,13 +70,6 @@ cp -rpav tmp/conf %{buildroot}%{_datadir}/%{repo}
 cp -rpav tmp/public %{buildroot}%{_datadir}/%{repo}
 cp -rpav tmp/scripts %{buildroot}%{_datadir}/%{repo}
 
-if [ -d tmp/bin ]; then
- cp -rpav bin/* tmp/bin/
-else
- mkdir -p tmp/bin
- cp -rpav bin/* tmp/bin/
-fi
-
 install -d -p %{buildroot}%{_sbindir}
 cp tmp/bin/%{repo}-server %{buildroot}%{_sbindir}/
 install -d -p %{buildroot}%{_bindir}
@@ -102,6 +95,7 @@ export GOPATH=$(pwd)/_build:%{gopath}
 go test ./pkg/api
 go test ./pkg/bus
 go test ./pkg/components/apikeygen
+go test ./pkg/components/renderer
 go test ./pkg/events
 go test ./pkg/models
 go test ./pkg/plugins
@@ -165,7 +159,7 @@ exit 0
 
 * Mon Nov  6 2017 Mykola Marzhan <mykola.marzhan@percona.com> - 4.6.1-1
 - PMM-1652 update to 4.6.1
-
+-
 * Tue Oct 31 2017 Mykola Marzhan <mykola.marzhan@percona.com> - 4.6.0-1
 - PMM-1652 update to 4.6.0
 

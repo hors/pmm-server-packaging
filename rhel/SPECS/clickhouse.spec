@@ -1,12 +1,12 @@
 %define clickhouse_user clickhouse
 %define clickhouse_group clickhouse
 
-%global commit             96485e41c5b1d65fa2fbf016523f5e1fb37d3ffd
+%global commit             562e8726e33c40d382092332b5880fd0c5754ef2 
 %global shortcommit        %(c=%{commit}; echo ${c:0:7})
 
 Name:           percona-clickhouse
-Version:        1.1.54236
-Release:        4%{?dist}
+Version:        1.1.54304
+Release:        1%{?dist}
 Summary:        A free analytic DBMS for big data
 Group:          Applications/Databases
 License:        Apache-2.0
@@ -78,7 +78,7 @@ cmake .. \
   -DUSE_INTERNAL_ZSTD_LIBRARY=0 \
   -DUSE_INTERNAL_ZLIB_LIBRARY=0 \
   -DENABLE_TESTS=0
-%{__make} %{?_smp_mflags}
+%{__make} %{?_smp_mflags} VERBOSE=1
 EOF
 %endif
 
@@ -147,6 +147,7 @@ exit 0
 %{_bindir}/clickhouse-server
 %{_bindir}/clickhouse-zookeeper-cli
 %{_bindir}/corrector_utf8
+%{_bindir}/clickhouse-performance-test
 %if 0%{?rhel}  == 7
 #config(noreplace) %{_sysconfdir}/clickhouse-server/config.xml
 %config(noreplace) %{_sysconfdir}/clickhouse-server/users.xml
@@ -167,6 +168,9 @@ exit 0
 
 
 %changelog
+* Tue Oct  9 2018 Vadim Yalovets <vadim.yalovets@percona.com> - 1.1.54304-1
+- PMM-2911 PMM with Clickhouse 
+
 * Tue Aug 22 2017 Mykola Marzhan <mykola.marzhan@percona.com> - 1.1.54236-4
 - avoid colision with pmm-server rpm
 

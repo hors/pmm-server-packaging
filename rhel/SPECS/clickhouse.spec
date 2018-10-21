@@ -5,8 +5,8 @@
 %global shortcommit        %(c=%{commit}; echo ${c:0:7})
 
 Name:           percona-clickhouse
-Version:        1.1.54304
-Release:        1%{?dist}
+Version:        18.14.8
+Release:        stable%{?dist}
 Summary:        A free analytic DBMS for big data
 Group:          Applications/Databases
 License:        Apache-2.0
